@@ -1,0 +1,19 @@
+Helium ion scattering cross sections developed from the
+analytical representation of A. V. Phelps available at
+http://jila.colorado.edu/~avp/
+
+# --------------------------------------------------------------------------------------------------------------------------- #
+
+LXcat, http://www.lxcat.net
+Generated on 28 Nov 2012.
+All rights reserved.
+
+# --------------------------------------------------------------------------------------------------------------------------- #
+DATABASE: Biagi-v7.1 (Partial transcription of  Steve Biagi's 2004 cross section compilation)
+DESCRIPTION: For the moment, this data base contains cross sections for the rare gases.  The excitation cross sections are
+grouped into a few effective excitation levels.  For more detailed cross sections with multiple levels, see Biagi 8.9.   These
+cross sections were compiled for use in a Monte Carlo (or multi-term Boltzmann) code.
+ For history and detailed notes, see http://consult.cern.ch/writeup/magboltz/
+CONTACT: Cross sections extracted from
+PROGRAM MAGBOLTZ, VERSION 7.1 JUNE 2004
+# --------------------------------------------------------------------------------------------------------------------------- #
