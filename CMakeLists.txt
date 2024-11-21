@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+project(ccp-benchmark)
+
 set(CMAKE_CXX_STANDARD 20)
 set(FETCHCONTENT_QUIET OFF CACHE BOOL "" FORCE)
 
@@ -19,6 +21,7 @@ CPMAddPackage(
         GIT_TAG main
 )
 CPMAddPackage("gh:d99kris/rapidcsv@8.83")
+CPMAddPackage("gh:p-ranav/argparse@3.1")
 
 # Source files
 add_executable(cpp-benchmark
@@ -29,4 +32,4 @@ add_executable(cpp-benchmark
         src/simulation.h
 )
 
-target_link_libraries(cpp-benchmark PUBLIC kn::kn rapidcsv)
+target_link_libraries(cpp-benchmark PUBLIC kn::kn rapidcsv argparse)
