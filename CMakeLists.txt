@@ -22,7 +22,11 @@ CPMAddPackage("gh:d99kris/rapidcsv@8.83")
 
 # Source files
 add_executable(cpp-benchmark
-src/main.cpp
+        src/main.cpp
+        src/simulation.cpp
+        src/parameters.cpp
+        src/parameters.h
+        src/simulation.h
 )
 
 target_link_libraries(cpp-benchmark PUBLIC kn::kn rapidcsv)
