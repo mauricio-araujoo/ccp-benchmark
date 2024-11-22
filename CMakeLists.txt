@@ -24,7 +24,7 @@ CPMAddPackage("gh:d99kris/rapidcsv@8.83")
 CPMAddPackage("gh:p-ranav/argparse@3.1")
 
 # Source files
-add_executable(cpp-benchmark
+add_executable(ccp-benchmark
         src/main.cpp
         src/simulation.cpp
         src/parameters.cpp
@@ -33,4 +33,4 @@ add_executable(cpp-benchmark
         src/reactions.cpp
 )
 
-target_link_libraries(cpp-benchmark PUBLIC kn::kn rapidcsv argparse)
+target_link_libraries(ccp-benchmark PUBLIC kn::kn rapidcsv argparse)
