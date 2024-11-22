@@ -31,6 +31,8 @@ add_executable(ccp-benchmark
         src/parameters.h
         src/simulation.h
         src/reactions.cpp
+        src/simulation_events.cpp
+        src/simulation_events.h
 )
 
 target_link_libraries(ccp-benchmark PUBLIC kn::kn rapidcsv argparse)

@@ -6,7 +6,6 @@
 namespace ccp {
 
 struct Parameters {
-
     size_t nx;
     double f;
     double dt;
@@ -36,5 +35,5 @@ private:
     void computed_parameters();
 };
 
-}
-#endif //PARAMETERS_H
+}  // namespace ccp
+#endif  // PARAMETERS_H

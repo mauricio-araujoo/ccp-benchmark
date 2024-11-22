@@ -1,36 +1,35 @@
+#include <argparse/argparse.hpp>
 #include <cstdio>
 #include <string>
 
-#include <argparse/argparse.hpp>
-
-#include "simulation.h"
 #include "kn/random/random.h"
+#include "simulation.h"
+#include "simulation_events.h"
 
 ccp::Parameters get_case_parameters(int case_number) {
-
     ccp::Parameters p;
 
     switch (case_number) {
         case 1:
             p = ccp::Parameters::case_1();
-        break;
+            break;
         case 2:
             p = ccp::Parameters::case_2();
-        break;
+            break;
         case 3:
             p = ccp::Parameters::case_3();
-        break;
+            break;
         case 4:
             p = ccp::Parameters::case_4();
-        break;
+            break;
         default:
-        break;
+            break;
     }
 
     return p;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     kn::random::initialize(42);
     argparse::ArgumentParser args("cpp-benchmark");
 
@@ -54,6 +53,7 @@ int main(int argc, char *argv[]) {
     printf("Data path set to %s\n", data_path.c_str());
 
     ccp::Simulation sim(get_case_parameters(case_number), data_path);
+    ccp::setup_events(sim);
     sim.run();
 
     return 0;
