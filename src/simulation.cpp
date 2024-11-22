@@ -33,9 +33,6 @@ void Simulation::run() {
     auto electron_collisions = load_electron_collisions();
     auto ion_collisions = load_ion_collisions();
 
-    auto av_electron_density = kn::spatial::AverageGrid(state_.electron_density_);
-    auto av_ion_density = kn::spatial::AverageGrid(state_.ion_density_);
-
     auto poisson_solver =
         kn::electromagnetics::DirichletPoissonSolver(parameters_.nx, parameters_.dx);
 

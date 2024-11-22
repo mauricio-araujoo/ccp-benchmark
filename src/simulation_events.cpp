@@ -1,6 +1,22 @@
 
 #include "simulation_events.h"
 
+#include <fstream>
+#include <span>
+
+namespace {
+void save_vec(const char* filename, const std::span<double>& v) {
+    std::ofstream out_file(filename);
+
+    for (size_t i = 0; i < v.size(); i++) {
+        if (i != 0) {
+            out_file << "\n";
+        }
+        out_file << v[i];
+    }
+}
+}  // namespace
+
 namespace ccp {
 void setup_events(Simulation& simulation) {
     struct PrintStartAction : public Simulation::EventAction {
@@ -25,10 +41,9 @@ void setup_events(Simulation& simulation) {
         kn::spatial::AverageGrid av_ion_density;
         Parameters parameters_;
 
-        AverageFieldAction(const Simulation::State& s, const Parameters& parameters)
-            : parameters_(parameters) {
-            av_electron_density = kn::spatial::AverageGrid(s.electron_density_);
-            av_ion_density = kn::spatial::AverageGrid(s.ion_density_);
+        AverageFieldAction(const Parameters& parameters) : parameters_(parameters) {
+            av_electron_density = kn::spatial::AverageGrid(parameters_.l, parameters_.nx);
+            av_ion_density = kn::spatial::AverageGrid(parameters_.l, parameters_.nx);
         }
 
         void notify(const Simulation::State& s) override {
@@ -39,8 +54,8 @@ void setup_events(Simulation& simulation) {
         }
     };
 
-    auto avg_field_action = simulation.events().add_action(Simulation::Event::Step,
-                                   AverageFieldAction(simulation.state(), simulation.parameters()));
+    auto avg_field_action = simulation.events().add_action(
+        Simulation::Event::Step, AverageFieldAction(simulation.parameters()));
 
     struct SaveDataAction : public Simulation::EventAction {
         std::weak_ptr<AverageFieldAction> avg_field_action_;
@@ -49,7 +64,9 @@ void setup_events(Simulation& simulation) {
 
         void notify(const Simulation::State& s) override {
             if (!avg_field_action_.expired()) {
-                //save
+                auto avg_field_action_ptr = avg_field_action_.lock();
+                save_vec("density_e.txt", avg_field_action_ptr->av_electron_density.get());
+                save_vec("density_i.txt", avg_field_action_ptr->av_ion_density.get());
             }
         }
     };
