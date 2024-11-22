@@ -30,6 +30,7 @@ add_executable(cpp-benchmark
         src/parameters.cpp
         src/parameters.h
         src/simulation.h
+        src/reactions.cpp
 )
 
 target_link_libraries(cpp-benchmark PUBLIC kn::kn rapidcsv argparse)

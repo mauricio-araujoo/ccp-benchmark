@@ -16,6 +16,7 @@ namespace ccp {
     void Parameters::computed_parameters() {
         dx = l / static_cast<double>(nx - 1);
         particle_weight = n0 * l / static_cast<double>(ppc * (nx - 1));
+        n_initial = (nx - 1) * ppc;
     }
 
     Parameters Parameters::case_1() {

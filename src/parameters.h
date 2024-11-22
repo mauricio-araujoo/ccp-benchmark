@@ -24,6 +24,7 @@ struct Parameters {
     size_t n_steps;
     size_t n_steps_avg;
     double particle_weight;
+    size_t n_initial;
 
     static Parameters case_1();
     static Parameters case_2();
