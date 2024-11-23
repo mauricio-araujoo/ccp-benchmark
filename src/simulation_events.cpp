@@ -5,24 +5,35 @@
 #include <span>
 
 namespace {
-void save_vec(const char* filename, const std::span<double>& v) {
+template <class It>
+void save_vec(const char* filename, const It& vec) {
     std::ofstream out_file(filename);
 
-    for (size_t i = 0; i < v.size(); i++) {
+    size_t i = 0;
+    for (const auto& v : vec) {
         if (i != 0) {
             out_file << "\n";
         }
-        out_file << v[i];
+        out_file << v;
+        i++;
     }
+}
+
+std::vector<double> count_to_density(double particle_weight,
+                                     double dx,
+                                     const std::vector<double>& count) {
+    auto d = std::vector<double>(count.size());
+    std::ranges::transform(count, d.begin(), [particle_weight, dx](const double val) {
+        return val * particle_weight / dx;
+    });
+    return d;
 }
 }  // namespace
 
 namespace ccp {
 void setup_events(Simulation& simulation) {
     struct PrintStartAction : public Simulation::EventAction {
-        int i = 0;
-
-        void notify(const Simulation::State&) override { printf("Starting simulation (%d)\n", i); }
+        void notify(const Simulation::State&) override { printf("Starting simulation\n"); }
     };
 
     simulation.events().add_action<PrintStartAction>(Simulation::Event::Start);
@@ -59,18 +70,27 @@ void setup_events(Simulation& simulation) {
 
     struct SaveDataAction : public Simulation::EventAction {
         std::weak_ptr<AverageFieldAction> avg_field_action_;
-        explicit SaveDataAction(const std::weak_ptr<AverageFieldAction>& avg_field_action)
-            : avg_field_action_(avg_field_action) {}
+        Parameters parameters_;
+
+        explicit SaveDataAction(const std::weak_ptr<AverageFieldAction>& avg_field_action,
+                                const Parameters& parameters)
+            : avg_field_action_(avg_field_action), parameters_(parameters) {}
 
         void notify(const Simulation::State& s) override {
             if (!avg_field_action_.expired()) {
-                auto avg_field_action_ptr = avg_field_action_.lock();
-                save_vec("density_e.txt", avg_field_action_ptr->av_electron_density.get());
-                save_vec("density_i.txt", avg_field_action_ptr->av_ion_density.get());
+                const auto avg_field_action_ptr = avg_field_action_.lock();
+                const auto& avg_e = avg_field_action_ptr->av_electron_density.get();
+                const auto& avg_i = avg_field_action_ptr->av_ion_density.get();
+
+                save_vec("density_e.txt",
+                         count_to_density(parameters_.particle_weight, parameters_.dx, avg_e));
+                save_vec("density_i.txt",
+                         count_to_density(parameters_.particle_weight, parameters_.dx, avg_i));
             }
         }
     };
 
-    simulation.events().add_action(Simulation::Event::End, SaveDataAction(avg_field_action));
+    simulation.events().add_action(Simulation::Event::End,
+                                   SaveDataAction(avg_field_action, simulation.parameters()));
 }
 }  // namespace ccp
