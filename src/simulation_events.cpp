@@ -1,7 +1,9 @@
 
 #include "simulation_events.h"
 
+#include <chrono>
 #include <fstream>
+#include <iostream>
 #include <span>
 
 namespace {
@@ -37,6 +39,31 @@ void setup_events(Simulation& simulation) {
     };
 
     simulation.events().add_action<PrintStartAction>(Simulation::Event::Start);
+
+    struct MeasureTimeStepAction : public Simulation::EventAction {
+        typedef std::chrono::high_resolution_clock clk;
+        typedef std::chrono::milliseconds ms;
+
+        std::chrono::time_point<std::chrono::steady_clock> t_last;
+        std::chrono::duration<double> mean_duration{0.0};
+        size_t initial_step = 0;
+
+        void notify(const Simulation::State& s) override {
+            if (initial_step == 0)
+                t_last = clk::now();
+
+            if ((s.step % 1000 == 0) && s.step > 0) {
+                const auto now = clk::now();
+                const double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
+                                   static_cast<double>(s.step - initial_step);
+                printf("Average step duration: %.2f ms\n", dur);
+                t_last = now;
+                initial_step = s.step;
+            }
+        }
+    };
+
+    simulation.events().add_action<MeasureTimeStepAction>(Simulation::Event::Step);
 
     struct PrintStepAction : public Simulation::EventAction {
         void notify(const Simulation::State& s) override {
