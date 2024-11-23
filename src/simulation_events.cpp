@@ -1,6 +1,7 @@
 
 #include "simulation_events.h"
 
+#include <algorithm>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -42,7 +43,7 @@ void setup_events(Simulation& simulation) {
 
     struct MeasureTimeStepAction : public Simulation::EventAction {
         typedef std::chrono::high_resolution_clock clk;
-        typedef std::chrono::milliseconds ms;
+        typedef std::chrono::duration<double, std::milli> ms;
 
         std::chrono::time_point<std::chrono::steady_clock> t_last;
         std::chrono::duration<double> mean_duration{0.0};

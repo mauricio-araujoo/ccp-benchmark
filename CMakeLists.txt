@@ -14,14 +14,10 @@ if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
 endif()
 include(${CPM_DOWNLOAD_LOCATION})
 
-# External libs
-CPMAddPackage(
-        NAME kn
-        GITHUB_REPOSITORY luihabl/kn
-        GIT_TAG main
-)
+# Add external libs
 CPMAddPackage("gh:d99kris/rapidcsv@8.83")
 CPMAddPackage("gh:p-ranav/argparse@3.1")
+add_subdirectory(kn)
 
 # Source files
 add_executable(ccp-benchmark

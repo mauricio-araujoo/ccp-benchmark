@@ -33,8 +33,14 @@
 
 # IDE
 .idea
+.vs
+.vscode
 build
 cmake-build*
+out
 
 # Python
 .venv
+
+# CMake
+CMakeSettings.json

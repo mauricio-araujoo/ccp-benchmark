@@ -5,9 +5,10 @@
 #include "rapidcsv.h"
 
 namespace {
-kn::collisions::CrossSection load_cross_section(const std::string& path, double energy_threshold) {
+kn::collisions::CrossSection load_cross_section(const std::filesystem::path& path, double energy_threshold) {
     kn::collisions::CrossSection cs;
-    rapidcsv::Document doc(path, rapidcsv::LabelParams(-1, -1), rapidcsv::SeparatorParams(';'));
+    rapidcsv::Document doc(path.string(), rapidcsv::LabelParams(-1, -1),
+                           rapidcsv::SeparatorParams(';'));
     cs.energy = doc.GetColumn<double>(0);
     cs.cross_section = doc.GetColumn<double>(1);
     cs.threshold = energy_threshold;
