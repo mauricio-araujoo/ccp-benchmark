@@ -35,6 +35,9 @@ std::vector<double> count_to_density(double particle_weight,
 
 namespace ccp {
 void setup_events(Simulation& simulation) {
+
+    const size_t print_step_interval = 1000;
+    
     struct PrintStartAction : public Simulation::EventAction {
         void notify(const Simulation::State&) override { printf("Starting simulation\n"); }
     };
@@ -46,16 +49,15 @@ void setup_events(Simulation& simulation) {
         typedef std::chrono::duration<double, std::milli> ms;
 
         std::chrono::time_point<std::chrono::steady_clock> t_last;
-        std::chrono::duration<double> mean_duration{0.0};
         size_t initial_step = 0;
 
         void notify(const Simulation::State& s) override {
-            if (initial_step == 0)
+            if (s.step == 0)
                 t_last = clk::now();
 
-            if ((s.step % 1000 == 0) && s.step > 0) {
+            if ((s.step % print_step_interval == 0) && (s.step > 0)) {
                 const auto now = clk::now();
-                const double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
+                double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
                                    static_cast<double>(s.step - initial_step);
                 printf("Average step duration: %.2f ms\n", dur);
                 t_last = now;
@@ -68,8 +70,8 @@ void setup_events(Simulation& simulation) {
 
     struct PrintStepAction : public Simulation::EventAction {
         void notify(const Simulation::State& s) override {
-            if (s.step % 1000 == 0)
-                printf("step: %lu\n", s.step);
+            if (s.step % print_step_interval == 0)
+                printf("step: %zu\n", s.step);
         }
     };
 
