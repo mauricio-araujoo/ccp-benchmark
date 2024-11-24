@@ -35,47 +35,49 @@ std::vector<double> count_to_density(double particle_weight,
 
 namespace ccp {
 void setup_events(Simulation& simulation) {
-
     const size_t print_step_interval = 1000;
-    
+
     struct PrintStartAction : public Simulation::EventAction {
-        void notify(const Simulation::State&) override { printf("Starting simulation\n"); }
+        void notify(const Simulation::StateInterface&) override { printf("Starting simulation\n"); }
     };
 
     simulation.events().add_action<PrintStartAction>(Simulation::Event::Start);
 
-    struct MeasureTimeStepAction : public Simulation::EventAction {
+    struct PrintEvolutionAction : public Simulation::EventAction {
         typedef std::chrono::high_resolution_clock clk;
         typedef std::chrono::duration<double, std::milli> ms;
-
         std::chrono::time_point<std::chrono::steady_clock> t_last;
         size_t initial_step = 0;
 
-        void notify(const Simulation::State& s) override {
-            if (s.step == 0)
+        void notify(const Simulation::StateInterface& s) override {
+            auto step = s.step();
+
+            if (step == 0)
                 t_last = clk::now();
 
-            if ((s.step % print_step_interval == 0) && (s.step > 0)) {
+            if ((step % (print_step_interval / 10) == 0) && (step > 0)) {
+                printf("-");
+            }
+
+            if ((step % print_step_interval == 0) && (step > 0)) {
+                printf("\n");
+
                 const auto now = clk::now();
                 double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
-                                   static_cast<double>(s.step - initial_step);
-                printf("Average step duration: %.2f ms\n", dur);
+                             static_cast<double>(s.step() - initial_step);
                 t_last = now;
-                initial_step = s.step;
+                initial_step = step;
+
+                printf("Info (Step: %zu):\n", step);
+                printf("    Avg step duration: %.2fms\n", dur);
+                printf("    Sim electrons: %zu\n", s.electrons().n());
+                printf("    Sim ions: %zu\n", s.ions().n());
+                printf("\n");
             }
         }
     };
 
-    simulation.events().add_action<MeasureTimeStepAction>(Simulation::Event::Step);
-
-    struct PrintStepAction : public Simulation::EventAction {
-        void notify(const Simulation::State& s) override {
-            if (s.step % print_step_interval == 0)
-                printf("step: %zu\n", s.step);
-        }
-    };
-
-    simulation.events().add_action<PrintStepAction>(Simulation::Event::Step);
+    simulation.events().add_action<PrintEvolutionAction>(Simulation::Event::Step);
 
     struct AverageFieldAction : public Simulation::EventAction {
         kn::spatial::AverageGrid av_electron_density;
@@ -87,16 +89,16 @@ void setup_events(Simulation& simulation) {
             av_ion_density = kn::spatial::AverageGrid(parameters_.l, parameters_.nx);
         }
 
-        void notify(const Simulation::State& s) override {
-            if (s.step > parameters_.n_steps - parameters_.n_steps_avg) {
-                av_electron_density.add(s.electron_density_);
-                av_ion_density.add(s.ion_density_);
+        void notify(const Simulation::StateInterface& s) override {
+            if (s.step() > parameters_.n_steps - parameters_.n_steps_avg) {
+                av_electron_density.add(s.electron_density());
+                av_ion_density.add(s.ion_density());
             }
         }
     };
 
     auto avg_field_action = simulation.events().add_action(
-        Simulation::Event::Step, AverageFieldAction(simulation.parameters()));
+        Simulation::Event::Step, AverageFieldAction(simulation.state().parameters()));
 
     struct SaveDataAction : public Simulation::EventAction {
         std::weak_ptr<AverageFieldAction> avg_field_action_;
@@ -106,7 +108,7 @@ void setup_events(Simulation& simulation) {
                                 const Parameters& parameters)
             : avg_field_action_(avg_field_action), parameters_(parameters) {}
 
-        void notify(const Simulation::State& s) override {
+        void notify(const Simulation::StateInterface& s) override {
             if (!avg_field_action_.expired()) {
                 const auto avg_field_action_ptr = avg_field_action_.lock();
                 const auto& avg_e = avg_field_action_ptr->av_electron_density.get();
@@ -120,7 +122,7 @@ void setup_events(Simulation& simulation) {
         }
     };
 
-    simulation.events().add_action(Simulation::Event::End,
-                                   SaveDataAction(avg_field_action, simulation.parameters()));
+    simulation.events().add_action(
+        Simulation::Event::End, SaveDataAction(avg_field_action, simulation.state().parameters()));
 }
 }  // namespace ccp
