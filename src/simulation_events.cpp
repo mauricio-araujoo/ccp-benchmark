@@ -1,10 +1,8 @@
 
 #include "simulation_events.h"
 
-#include <algorithm>
 #include <chrono>
 #include <fstream>
-#include <iostream>
 #include <span>
 
 namespace {
@@ -35,7 +33,7 @@ std::vector<double> count_to_density(double particle_weight,
 
 namespace ccp {
 void setup_events(Simulation& simulation) {
-    const size_t print_step_interval = 1000;
+    constexpr size_t print_step_interval = 1000;
 
     struct PrintStartAction : public Simulation::EventAction {
         void notify(const Simulation::StateInterface&) override { printf("Starting simulation\n"); }
@@ -63,13 +61,21 @@ void setup_events(Simulation& simulation) {
                 printf("\n");
 
                 const auto now = clk::now();
-                double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
-                             static_cast<double>(s.step() - initial_step);
+                const double dur = std::chrono::duration_cast<ms>(now - t_last).count() /
+                                   static_cast<double>(s.step() - initial_step);
                 t_last = now;
                 initial_step = step;
 
-                printf("Info (Step: %zu):\n", step);
-                printf("    Avg step duration: %.2fms\n", dur);
+                const float progress =
+                    static_cast<float>(step) /
+                    static_cast<float>(std::max(1ul, s.parameters().n_steps - 1));
+
+                const double dur_per_particle =
+                    dur / (static_cast<double>(s.electrons().n() + s.ions().n()));
+
+                printf("Info (Step: %zu/%zu, %.2f%%):\n", step, s.parameters().n_steps,
+                       progress * 100.0);
+                printf("    Avg step duration: %.2fms (%.2eus/p)\n", dur, dur_per_particle * 1e3);
                 printf("    Sim electrons: %zu\n", s.electrons().n());
                 printf("    Sim ions: %zu\n", s.ions().n());
                 printf("\n");
@@ -84,7 +90,7 @@ void setup_events(Simulation& simulation) {
         kn::spatial::AverageGrid av_ion_density;
         Parameters parameters_;
 
-        AverageFieldAction(const Parameters& parameters) : parameters_(parameters) {
+        explicit AverageFieldAction(const Parameters& parameters) : parameters_(parameters) {
             av_electron_density = kn::spatial::AverageGrid(parameters_.l, parameters_.nx);
             av_ion_density = kn::spatial::AverageGrid(parameters_.l, parameters_.nx);
         }
