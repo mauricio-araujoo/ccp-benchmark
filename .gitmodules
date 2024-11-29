@@ -1,3 +1,3 @@
 [submodule "kn"]
-	path = kn
+	path = spark
 	url = https://github.com/lase-unb/spark
