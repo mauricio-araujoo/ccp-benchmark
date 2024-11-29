@@ -3,7 +3,7 @@ Implementation of the PIC capacitively coupled plasma benchmarks by
 
 > M. M. Turner, et al. *Simulation benchmarks for low-pressure plasmas: Capacitive discharges.* Phys. Plasmas 1 January 2013; 20 (1): 013507. [10.1063/1.4775084](https://doi.org/10.1063/1.4775084).
 
-using the [spark](https://github.com/luihabl/spark) kinetic simulation library.
+using the [spark](https://github.com/lase-unb/spark) particle kinetic simulation library.
 
 ## Building and running
 
