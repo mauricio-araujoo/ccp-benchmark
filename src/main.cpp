@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <string>
 
-#include "kn/random/random.h"
+#include "spark/random/random.h"
 #include "simulation.h"
 #include "simulation_events.h"
 
@@ -30,7 +30,7 @@ ccp::Parameters get_case_parameters(int case_number) {
 }
 
 int main(int argc, char* argv[]) {
-    kn::random::initialize(500);
+    spark::random::initialize(500);
     argparse::ArgumentParser args("cpp-benchmark");
 
     int case_number = 0;

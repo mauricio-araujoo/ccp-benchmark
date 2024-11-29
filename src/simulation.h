@@ -1,9 +1,9 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 
-#include <kn/collisions/mcc.h>
-#include <kn/particle/species.h>
-#include <kn/spatial/grid.h>
+#include <spark/collisions/mcc.h>
+#include <spark/particle/species.h>
+#include <spark/spatial/grid.h>
 
 #include <string>
 
@@ -17,10 +17,10 @@ public:
     class StateInterface {
     public:
         StateInterface(Simulation& sim) : sim_(sim) {}
-        const kn::spatial::UniformGrid& electron_density() const { return sim_.electron_density_; }
-        const kn::spatial::UniformGrid& ion_density() const { return sim_.ion_density_; }
-        const kn::particle::ChargedSpecies<1, 3>& ions() const { return sim_.ions_; }
-        const kn::particle::ChargedSpecies<1, 3>& electrons() const { return sim_.electrons_; }
+        const spark::spatial::UniformGrid& electron_density() const { return sim_.electron_density_; }
+        const spark::spatial::UniformGrid& ion_density() const { return sim_.ion_density_; }
+        const spark::particle::ChargedSpecies<1, 3>& ions() const { return sim_.ions_; }
+        const spark::particle::ChargedSpecies<1, 3>& electrons() const { return sim_.electrons_; }
 
         const Parameters& parameters() const { return sim_.parameters_; }
 
@@ -52,21 +52,21 @@ private:
     StateInterface state_;
 
     size_t step = 0;
-    kn::particle::ChargedSpecies<1, 3> ions_;
-    kn::particle::ChargedSpecies<1, 3> electrons_;
+    spark::particle::ChargedSpecies<1, 3> ions_;
+    spark::particle::ChargedSpecies<1, 3> electrons_;
 
-    kn::spatial::UniformGrid electron_density_;
-    kn::spatial::UniformGrid ion_density_;
+    spark::spatial::UniformGrid electron_density_;
+    spark::spatial::UniformGrid ion_density_;
 
-    kn::spatial::UniformGrid rho_field_;
-    kn::spatial::UniformGrid phi_field_;
-    kn::spatial::UniformGrid electric_field_;
+    spark::spatial::UniformGrid rho_field_;
+    spark::spatial::UniformGrid phi_field_;
+    spark::spatial::UniformGrid electric_field_;
 
     Events<Event, EventAction> events_;
 
     void set_initial_conditions();
-    kn::collisions::MCCReactionSet<1, 3> load_electron_collisions();
-    kn::collisions::MCCReactionSet<1, 3> load_ion_collisions();
+    spark::collisions::MCCReactionSet<1, 3> load_electron_collisions();
+    spark::collisions::MCCReactionSet<1, 3> load_ion_collisions();
 };
 }  // namespace ccp
 

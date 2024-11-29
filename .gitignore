@@ -35,6 +35,7 @@
 .idea
 .vs
 .vscode
+.cache
 build
 cmake-build*
 out
@@ -44,3 +45,6 @@ out
 
 # CMake
 CMakeSettings.json
+
+# MacOS
+.DS_Store

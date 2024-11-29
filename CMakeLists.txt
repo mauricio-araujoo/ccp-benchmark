@@ -17,7 +17,7 @@ include(${CPM_DOWNLOAD_LOCATION})
 # Add external libs
 CPMAddPackage("gh:d99kris/rapidcsv@8.83")
 CPMAddPackage("gh:p-ranav/argparse@3.1")
-add_subdirectory(kn)
+add_subdirectory(spark)
 
 # Source files
 add_executable(ccp-benchmark
@@ -31,4 +31,4 @@ add_executable(ccp-benchmark
         src/simulation_events.h
 )
 
-target_link_libraries(ccp-benchmark PUBLIC kn::kn rapidcsv argparse)
+target_link_libraries(ccp-benchmark PUBLIC spark::spark rapidcsv argparse)
