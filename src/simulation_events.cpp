@@ -91,8 +91,8 @@ void setup_events(Simulation& simulation) {
         Parameters parameters_;
 
         explicit AverageFieldAction(const Parameters& parameters) : parameters_(parameters) {
-            av_electron_density = spark::spatial::AverageGrid(parameters_.l, parameters_.nx);
-            av_ion_density = spark::spatial::AverageGrid(parameters_.l, parameters_.nx);
+            av_electron_density = spark::spatial::AverageGrid({{parameters_.l}, {parameters_.nx}});
+            av_ion_density = spark::spatial::AverageGrid({{parameters_.l}, {parameters_.nx}});
         }
 
         void notify(const Simulation::StateInterface& s) override {

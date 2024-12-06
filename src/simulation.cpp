@@ -83,11 +83,11 @@ void Simulation::set_initial_conditions() {
               maxwellian_emitter(parameters_.ti, parameters_.l, parameters_.m_he));
 
     // Fields
-    electron_density_ = spark::spatial::UniformGrid(parameters_.l, parameters_.nx);
-    ion_density_ = spark::spatial::UniformGrid(parameters_.l, parameters_.nx);
-    rho_field_ = spark::spatial::UniformGrid(parameters_.l, parameters_.nx);
-    phi_field_ = spark::spatial::UniformGrid(parameters_.l, parameters_.nx);
-    electric_field_ = spark::spatial::UniformGrid(parameters_.l, parameters_.nx);
+    electron_density_ = spark::spatial::UniformGrid<1>({parameters_.l}, {parameters_.nx});
+    ion_density_ = spark::spatial::UniformGrid<1>({parameters_.l}, {parameters_.nx});
+    rho_field_ = spark::spatial::UniformGrid<1>({parameters_.l}, {parameters_.nx});
+    phi_field_ = spark::spatial::UniformGrid<1>({parameters_.l}, {parameters_.nx});
+    electric_field_ = spark::spatial::UniformGrid<1>({parameters_.l}, {parameters_.nx});
 }
 
 spark::collisions::MCCReactionSet<1, 3> Simulation::load_electron_collisions() {

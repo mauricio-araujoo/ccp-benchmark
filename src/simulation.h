@@ -17,8 +17,8 @@ public:
     class StateInterface {
     public:
         StateInterface(Simulation& sim) : sim_(sim) {}
-        const spark::spatial::UniformGrid& electron_density() const { return sim_.electron_density_; }
-        const spark::spatial::UniformGrid& ion_density() const { return sim_.ion_density_; }
+        const spark::spatial::UniformGrid<1>& electron_density() const { return sim_.electron_density_; }
+        const spark::spatial::UniformGrid<1>& ion_density() const { return sim_.ion_density_; }
         const spark::particle::ChargedSpecies<1, 3>& ions() const { return sim_.ions_; }
         const spark::particle::ChargedSpecies<1, 3>& electrons() const { return sim_.electrons_; }
 
@@ -55,12 +55,12 @@ private:
     spark::particle::ChargedSpecies<1, 3> ions_;
     spark::particle::ChargedSpecies<1, 3> electrons_;
 
-    spark::spatial::UniformGrid electron_density_;
-    spark::spatial::UniformGrid ion_density_;
+    spark::spatial::UniformGrid<1> electron_density_;
+    spark::spatial::UniformGrid<1> ion_density_;
 
-    spark::spatial::UniformGrid rho_field_;
-    spark::spatial::UniformGrid phi_field_;
-    spark::spatial::UniformGrid electric_field_;
+    spark::spatial::UniformGrid<1> rho_field_;
+    spark::spatial::UniformGrid<1> phi_field_;
+    spark::spatial::UniformGrid<1> electric_field_;
 
     Events<Event, EventAction> events_;
 
