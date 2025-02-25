@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <fstream>
-#include <span>
 #include <ranges>
 #include <algorithm>
 
@@ -88,13 +87,14 @@ void setup_events(Simulation& simulation) {
     simulation.events().add_action<PrintEvolutionAction>(Simulation::Event::Step);
 
     struct AverageFieldAction : public Simulation::EventAction {
-        spark::spatial::AverageGrid av_electron_density;
-        spark::spatial::AverageGrid av_ion_density;
+        spark::spatial::AverageGrid<1> av_electron_density;
+        spark::spatial::AverageGrid<1> av_ion_density;
         Parameters parameters_;
 
         explicit AverageFieldAction(const Parameters& parameters) : parameters_(parameters) {
-            av_electron_density = spark::spatial::AverageGrid({{parameters_.l}, {parameters_.nx}});
-            av_ion_density = spark::spatial::AverageGrid({{parameters_.l}, {parameters_.nx}});
+            av_electron_density =
+                spark::spatial::AverageGrid<1>({{parameters_.l}, {parameters_.nx}});
+            av_ion_density = spark::spatial::AverageGrid<1>({{parameters_.l}, {parameters_.nx}});
         }
 
         void notify(const Simulation::StateInterface& s) override {
@@ -122,10 +122,10 @@ void setup_events(Simulation& simulation) {
                 const auto& avg_e = avg_field_action_ptr->av_electron_density.get();
                 const auto& avg_i = avg_field_action_ptr->av_ion_density.get();
 
-                save_vec("density_e.txt",
-                         count_to_density(parameters_.particle_weight, parameters_.dx, avg_e));
-                save_vec("density_i.txt",
-                         count_to_density(parameters_.particle_weight, parameters_.dx, avg_i));
+                save_vec("density_e.txt", count_to_density(parameters_.particle_weight,
+                                                           parameters_.dx, avg_e.data()));
+                save_vec("density_i.txt", count_to_density(parameters_.particle_weight,
+                                                           parameters_.dx, avg_i.data()));
             }
         }
     };
