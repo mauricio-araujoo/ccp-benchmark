@@ -17,7 +17,9 @@ public:
     class StateInterface {
     public:
         StateInterface(Simulation& sim) : sim_(sim) {}
-        const spark::spatial::UniformGrid<1>& electron_density() const { return sim_.electron_density_; }
+        const spark::spatial::UniformGrid<1>& electron_density() const {
+            return sim_.electron_density_;
+        }
         const spark::spatial::UniformGrid<1>& ion_density() const { return sim_.ion_density_; }
         const spark::particle::ChargedSpecies<1, 3>& ions() const { return sim_.ions_; }
         const spark::particle::ChargedSpecies<1, 3>& electrons() const { return sim_.electrons_; }
@@ -60,7 +62,7 @@ private:
 
     spark::spatial::UniformGrid<1> rho_field_;
     spark::spatial::UniformGrid<1> phi_field_;
-    spark::spatial::UniformGrid<1> electric_field_;
+    spark::spatial::TUniformGrid<spark::core::Vec<1>, 1> electric_field_;
 
     Events<Event, EventAction> events_;
 
