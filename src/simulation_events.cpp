@@ -3,6 +3,8 @@
 
 #include <chrono>
 #include <fstream>
+#include <ranges>
+#include <algorithm>
 
 namespace {
 template <class It>
@@ -43,7 +45,7 @@ void setup_events(Simulation& simulation) {
     struct PrintEvolutionAction : public Simulation::EventAction {
         typedef std::chrono::high_resolution_clock clk;
         typedef std::chrono::duration<double, std::milli> ms;
-        std::chrono::time_point<std::chrono::steady_clock> t_last;
+        std::chrono::time_point<std::chrono::high_resolution_clock> t_last;
         size_t initial_step = 0;
 
         void notify(const Simulation::StateInterface& s) override {
