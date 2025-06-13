@@ -10,7 +10,8 @@
 #include <spark/particle/pusher.h>
 #include <spark/random/random.h>
 #include <spark/spatial/grid.h>
-
+#include <spark/threads/pool.h>
+#include <thread>
 #include "reactions.h"
 
 namespace {
@@ -36,12 +37,12 @@ void Simulation::run() {
     spark::core::TMatrix<spark::core::Vec<1>, 1> force_electrons_, force_ions_;
 
     auto poisson_solver = spark::em::ThomasPoissonSolver1D(parameters_.nx, parameters_.dx);
-
+    spark::threads::ThPool pool(12);
     events().notify(Event::Start, state_);
 
     for (step = 0; step < parameters_.n_steps; ++step) {
-        spark::interpolate::weight_to_grid(electrons_, electron_density_);
-        spark::interpolate::weight_to_grid(ions_, ion_density_);
+        spark::interpolate::weight_to_grid(electrons_, electron_density_,pool);
+        spark::interpolate::weight_to_grid(ions_, ion_density_,pool);
         spark::em::charge_density(parameters_.particle_weight, ion_density_, electron_density_,
                                   rho_field_);
 
@@ -53,11 +54,11 @@ void Simulation::run() {
 
         spark::em::electric_field(phi_field_, electric_field_.data());
 
-        spark::interpolate::field_at_particles(electric_field_, electrons_, force_electrons_);
-        spark::interpolate::field_at_particles(electric_field_, ions_, force_ions_);
+        spark::interpolate::field_at_particles(electric_field_, electrons_, force_electrons_,pool);
+        spark::interpolate::field_at_particles(electric_field_, ions_, force_ions_,pool);
 
-        spark::particle::move_particles(electrons_, force_electrons_, parameters_.dt);
-        spark::particle::move_particles(ions_, force_ions_, parameters_.dt);
+        spark::particle::move_particles(electrons_, force_electrons_, parameters_.dt,pool);
+        spark::particle::move_particles(ions_, force_ions_, parameters_.dt,pool);
 
         spark::particle::apply_absorbing_boundary(electrons_, 0, parameters_.l);
         spark::particle::apply_absorbing_boundary(ions_, 0, parameters_.l);
